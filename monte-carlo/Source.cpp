@@ -1,7 +1,7 @@
-#include <ctime>
-#include <iostream>
-#include <cstdlib> 
-#include <cmath>
+#include <time.h>
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
 #include <mpi.h>
 
 using namespace std;
@@ -14,7 +14,7 @@ double function(double x)
 int main()
 {
 	double res = 0, tmp = 0, result = 0, A = 1, B = 2;
-
+	double start;
 	double lambda = double(rand()) / RAND_MAX;
 
 	int ProcNum, ProcRank, N = 100000;
@@ -27,6 +27,8 @@ int main()
 
 	srand(time(NULL) + ProcRank);
 
+	start = MPI_Wtime();
+
 	for (int i = ProcRank*(int)(N / ProcNum); i < (ProcRank + 1)*(int)(N / ProcNum); i++)
 	{
 		double lambda = double(rand()) / RAND_MAX;
@@ -34,8 +36,6 @@ int main()
 	}
 
 	res += (B - A) / double(N) *tmp;
-	
-	cout << "res = " << res << endl;
 
 	MPI_Reduce(&res, &result, 1, MPI_LONG_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
@@ -50,8 +50,8 @@ int main()
 
 		result += (B - A) / double(N) *tmp;
 
-		cout << "result = " << result << endl;
-		
+		printf("result = %f\n", result);
+		printf("result = %f", (MPI_Wtime() - start));
 	}
 
 	MPI_Finalize();
